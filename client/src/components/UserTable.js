@@ -1,40 +1,55 @@
 import React from 'react';
 import MaterialTable from 'material-table';
+import styled from 'styled-components';
 
-export default function UserTable() {
-  const [state, setState] = React.useState({
-    columns: [
-      { title: 'Name', field: 'name' },
-      { title: 'Surname', field: 'surname' },
-      { title: 'Birth Year', field: 'birthYear', type: 'numeric' },
-      {
-        title: 'Birth Place',
-        field: 'birthCity',
-        lookup: { 34: 'İstanbul', 63: 'Şanlıurfa' },
-      },
-    ],
-    data: [
-      { name: 'Mehmet', surname: 'Baran', birthYear: 1987, birthCity: 63 },
-      {
-        name: 'Zerya Betül',
-        surname: 'Baran',
-        birthYear: 2017,
-        birthCity: 34,
-      },
-    ],
-  });
+const Wrapper = styled.div`
+  display: flex;
+  justify-content:center;
+  margin-top: 80px;
+`;
 
+export default class UserTable extends React.Component{
+  constructor(props) {
+    super(props);
+    this.state = { 
+      columns: [
+        { title: 'Name', field: 'first_name' },
+      ],
+      data: [
+        { name: 'Mehmet Abo Handi'},
+        { name: 'Zerya Betül'},
+      ]
+    };
+  }
+  
+render(){
   return (
+    <Wrapper>
     <MaterialTable
-      title="Editable Example"
-      columns={state.columns}
-      data={state.data}
+      title="Users"
+      columns={this.state.columns}
+      data={query =>
+          new Promise((resolve, reject) => {
+            let url = 'https://reqres.in/api/users?'
+            url += 'per_page=' + query.pageSize
+            url += '&page=' + (query.page + 1)
+            fetch(url)
+              .then(response => response.json())
+              .then(result => {
+                resolve({
+                  data: result.data,
+                  page: result.page - 1,
+                  totalCount: result.total,
+                })
+              })
+          })
+        }
       editable={{
         onRowAdd: newData =>
           new Promise(resolve => {
             setTimeout(() => {
               resolve();
-              setState(prevState => {
+              this.setState(prevState => {
                 const data = [...prevState.data];
                 data.push(newData);
                 return { ...prevState, data };
@@ -46,7 +61,7 @@ export default function UserTable() {
             setTimeout(() => {
               resolve();
               if (oldData) {
-                setState(prevState => {
+                this.setState(prevState => {
                   const data = [...prevState.data];
                   data[data.indexOf(oldData)] = newData;
                   return { ...prevState, data };
@@ -58,7 +73,7 @@ export default function UserTable() {
           new Promise(resolve => {
             setTimeout(() => {
               resolve();
-              setState(prevState => {
+              this.setState(prevState => {
                 const data = [...prevState.data];
                 data.splice(data.indexOf(oldData), 1);
                 return { ...prevState, data };
@@ -67,5 +82,7 @@ export default function UserTable() {
           }),
       }}
     />
+    </Wrapper>
   );
+    }
 }
