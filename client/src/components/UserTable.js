@@ -64,16 +64,22 @@ render(){
         }),
         onRowUpdate: (newData, oldData) =>
           new Promise(resolve => {
-            setTimeout(() => {
-              resolve();
+            let url = 'http://localhost:3001/users/updateUser?'
+            url += 'id=' + oldData.id
+            url += '&newData=' + newData.name
               if (oldData) {
-                this.setState(prevState => {
-                  const data = [...prevState.data];
-                  data[data.indexOf(oldData)] = newData;
-                  return { ...prevState, data };
-                });
+                setTimeout(() => {
+                  axios.put(url,
+                  {
+                    headers: {
+                      'content-type': 'application/json; charset=utf-8'
+                  }
+                  }).then(response =>{  
+                      resolve();                  
+                  }
+                );
+                }, 600);
               }
-            }, 600);
           }),
         onRowDelete: oldData =>
         new Promise(resolve => {
@@ -89,9 +95,9 @@ render(){
                     resolve();                  
                 }
               );
-          },600) 
-          }),
-      }}
+          },600);
+          })
+        }}
       options ={{search: false}}
 
     />
