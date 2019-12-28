@@ -76,15 +76,20 @@ render(){
             }, 600);
           }),
         onRowDelete: oldData =>
-          new Promise(resolve => {
-            setTimeout(() => {
-              resolve();
-              this.setState(prevState => {
-                const data = [...prevState.data];
-                data.splice(data.indexOf(oldData), 1);
-                return { ...prevState, data };
-              });
-            }, 600);
+        new Promise(resolve => {
+            let url = 'http://localhost:3001/users/deleteUser?'
+            url += 'id=' + oldData.id
+            setTimeout(()=>{
+            axios.delete(url,
+            {
+                headers: {
+                'content-type': 'application/json; charset=utf-8'
+                }
+              }).then(response =>{  
+                    resolve();                  
+                }
+              );
+          },600) 
           }),
       }}
       options ={{search: false}}
