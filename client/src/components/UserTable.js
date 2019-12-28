@@ -1,6 +1,10 @@
 import React from 'react';
 import MaterialTable from 'material-table';
 import styled from 'styled-components';
+import axios from 'axios'
+import querystring from 'querystring'
+
+
 
 const Wrapper = styled.div`
   display: flex;
@@ -18,6 +22,7 @@ export default class UserTable extends React.Component{
       data: [],
     };
   }
+
   
 render(){
   return (
@@ -37,23 +42,26 @@ render(){
                   data: result.data,
                   page: result.page - 1,
                   totalCount: result.total ,
-
                 })
               })
           })
         }
       editable={{
         onRowAdd: newData =>
-          new Promise(resolve => {
-            setTimeout(() => {
-              resolve();
-              this.setState(prevState => {
-                const data = [...prevState.data];
-                data.push(newData);
-                return { ...prevState, data };
-              });
-            }, 600);
-          }),
+        new Promise((resolve, reject) => {
+          setTimeout(()=>{
+            axios.post('http://localhost:3001/users/addUser', querystring.stringify({
+                 name:newData.name, 
+              }),{
+                headers: {
+                'content-type': 'application/x-www-form-urlencoded;charset=utf-8'
+                }
+              }).then(response =>{  
+                    resolve();                  
+                }
+              );
+          },600) 
+        }),
         onRowUpdate: (newData, oldData) =>
           new Promise(resolve => {
             setTimeout(() => {
