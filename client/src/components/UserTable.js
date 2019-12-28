@@ -13,12 +13,9 @@ export default class UserTable extends React.Component{
     super(props);
     this.state = { 
       columns: [
-        { title: 'Name', field: 'first_name' },
+        { title: 'Name', field: 'name' },
       ],
-      data: [
-        { name: 'Mehmet Abo Handi'},
-        { name: 'Zerya Betül'},
-      ]
+      data: [],
     };
   }
   
@@ -30,22 +27,16 @@ render(){
       columns={this.state.columns}
       data={query =>
           new Promise((resolve, reject) => {
-            let url = 'https://reqres.in/api/users?'
+            let url = 'http://localhost:3001/users/getUsers?'
             url += 'per_page=' + query.pageSize
             url += '&page=' + (query.page + 1)
-            // let url = 'http://localhost:3001/users/getUsers?'
-            // // url += 'per_page=' + query.pageSize
-            // // url += '&page=' + (query.page + 1)
             fetch(url)
               .then(response => response.json())
               .then(result => {
                 resolve({
-                  // data: result.userList,
-                                    data: result.data,
-
+                  data: result.data,
                   page: result.page - 1,
-                  // totalCount: result.userList.length,
-                                    totalCount: result.total ,
+                  totalCount: result.total ,
 
                 })
               })
@@ -88,7 +79,10 @@ render(){
             }, 600);
           }),
       }}
+      options ={{search: false}}
+
     />
+
     </Wrapper>
   );
     }
