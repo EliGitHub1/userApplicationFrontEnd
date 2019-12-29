@@ -49,7 +49,6 @@ render(){
       editable={{
         onRowAdd: newData =>
         new Promise((resolve, reject) => {
-          setTimeout(()=>{
             axios.post('http://localhost:3001/users/addUser', querystring.stringify({
                  name:newData.name, 
               }),{
@@ -60,7 +59,6 @@ render(){
                     resolve();                  
                 }
               );
-          },600) 
         }),
         onRowUpdate: (newData, oldData) =>
           new Promise(resolve => {
@@ -68,7 +66,6 @@ render(){
             url += 'id=' + oldData.id
             url += '&newData=' + newData.name
               if (oldData) {
-                setTimeout(() => {
                   axios.put(url,
                   {
                     headers: {
@@ -78,14 +75,12 @@ render(){
                       resolve();                  
                   }
                 );
-                }, 600);
               }
           }),
         onRowDelete: oldData =>
         new Promise(resolve => {
             let url = 'http://localhost:3001/users/deleteUser?'
             url += 'id=' + oldData.id
-            setTimeout(()=>{
             axios.delete(url,
             {
                 headers: {
@@ -95,7 +90,6 @@ render(){
                     resolve();                  
                 }
               );
-          },600);
           })
         }}
       options ={{search: false}}
