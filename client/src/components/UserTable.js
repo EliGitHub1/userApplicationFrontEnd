@@ -1,10 +1,7 @@
 import React from 'react';
 import MaterialTable from 'material-table';
 import styled from 'styled-components';
-import axios from 'axios'
-import querystring from 'querystring'
-
-
+import {  deleteUser,updateUser, addUser,fetchData } from "../apiFunctions";
 
 const Wrapper = styled.div`
   display: flex;
@@ -19,83 +16,23 @@ export default class UserTable extends React.Component{
       columns: [
         { title: 'Name', field: 'name' },
       ],
-      data: [],
     };
   }
-
   
 render(){
   return (
     <Wrapper>
-    <MaterialTable
-      title="Users"
-      columns={this.state.columns}
-      data={query =>
-          new Promise((resolve, reject) => {
-            let url = 'http://localhost:3001/users/getUsers?'
-            url += 'per_page=' + query.pageSize
-            url += '&page=' + (query.page + 1)
-            fetch(url)
-              .then(response => response.json())
-              .then(result => {
-                resolve({
-                  data: result.data,
-                  page: result.page - 1,
-                  totalCount: result.total ,
-                })
-              })
-          })
-        }
-      editable={{
-        onRowAdd: newData =>
-        new Promise((resolve, reject) => {
-            axios.post('http://localhost:3001/users/addUser', querystring.stringify({
-                 name:newData.name, 
-              }),{
-                headers: {
-                'content-type': 'application/x-www-form-urlencoded;charset=utf-8'
-                }
-              }).then(response =>{  
-                    resolve();                  
-                }
-              );
-        }),
-        onRowUpdate: (newData, oldData) =>
-          new Promise(resolve => {
-            let url = 'http://localhost:3001/users/updateUser?'
-            url += 'id=' + oldData.id
-            url += '&newData=' + newData.name
-              if (oldData) {
-                  axios.put(url,
-                  {
-                    headers: {
-                      'content-type': 'application/json; charset=utf-8'
-                  }
-                  }).then(response =>{  
-                      resolve();                  
-                  }
-                );
-              }
-          }),
-        onRowDelete: oldData =>
-        new Promise(resolve => {
-            let url = 'http://localhost:3001/users/deleteUser?'
-            url += 'id=' + oldData.id
-            axios.delete(url,
-            {
-                headers: {
-                'content-type': 'application/json; charset=utf-8'
-                }
-              }).then(response =>{  
-                    resolve();                  
-                }
-              );
-          })
+      <MaterialTable
+        title="Users"
+        columns={this.state.columns}
+        data={query => fetchData(query)}
+        editable={{
+          onRowAdd: newData => addUser(newData),
+          onRowUpdate: (newData, oldData) => updateUser(newData, oldData),
+          onRowDelete: oldData=>deleteUser(oldData)
         }}
-      options ={{search: false}}
-
-    />
-
+        options ={{search: false}}
+      />
     </Wrapper>
   );
     }
